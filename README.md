@@ -1,11 +1,11 @@
 Bullet
 ======
 
-Bullet is a Cowboy handler and associated Javascript library for
-maintaining a persistent connection to the server irregardless of
-the browser used and the technologies available.
+Bullet is a Cowboy websocket handler and associated Javascript library 
+for maintaining a persistent connection to the server regardless of 
+the browser used and/or the underlying technologies available.
 
-Bullet defines a common interface both client and server-side to
-facilitate the handling of such connections. Bullet also takes care
-of reconnecting automatically when the connection is lost, and of
-the optional heartbeat managed client-side.
+Bullet defines a common interface for both client and server to easily
+facilitate the handling of these connections. Bullet additionally takes 
+care of reconnecting automatically whenever a connection is lost, and 
+also provides an optional heartbeat which is managed on the client-side.
