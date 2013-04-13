@@ -211,6 +211,7 @@
 					return;
 				}
 
+				transport = null;
 				clearInterval(heartbeat);
 
 				if (readyState == CLOSING){
