@@ -172,7 +172,8 @@
 		var isClosed = true;
 		var readyState = CLOSED;
 		var heartbeat;
-		var delay = delayDefault = 80;
+		var delay = 80;
+		var delayDefault = 80;
 		var delayMax = 10000;
 
 		var transport;
@@ -210,6 +211,7 @@
 					return;
 				}
 
+				transport = null;
 				clearInterval(heartbeat);
 
 				if (readyState == CLOSING){
@@ -250,11 +252,17 @@
 			url = newURL;
 		};
 		this.send = function(data){
-			return transport.send(data);
+			if (transport){
+				return transport.send(data);
+			} else{
+				return false;
+			}
 		};
 		this.close = function(){
 			readyState = CLOSING;
-			transport.close();
+			if (transport){
+				transport.close();
+			}
 		};
 	};
 
