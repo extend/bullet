@@ -99,7 +99,8 @@ info(Message, Req,
 		{ok, Req2, HandlerState2} ->
 			{loop, Req2, State#state{handler_state=HandlerState2}, hibernate};
 		{reply, Data, Req2, HandlerState2} ->
-			{ok, Req3} = cowboy_req:reply(200, [], Data, Req2),
+			%% set connection to close to avoid default keepalive
+			{ok, Req3} = cowboy_req:reply(200, [{<<"connection">>, <<"close">>}], Data, Req2),
 			{ok, Req3, State#state{handler_state=HandlerState2}}
 	end.
 
