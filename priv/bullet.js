@@ -74,7 +74,7 @@
 						return false;
 					}
 
-					var fakeurl = url.replace('ws:', 'http:').replace('wss:', 'https:');
+					var fakeurl = url.replace('ws', 'http');
 
 					$.ajax({
 						async: false,
@@ -108,13 +108,14 @@
 			};
 
 			function poll(){
-				var fakeurl = url.replace('ws:', 'http:').replace('wss:', 'https:');
+				var fakeurl = url.replace('ws', 'http');
 
 				xhr = $.ajax({
 					type: 'GET',
 					cache: false,
 					url: fakeurl,
-					dataType: 'text',
+					dataType: pollType,
+					jsonpCallback: 'bulletCB',
 					data: {},
 					headers: {'X-Socket-Transport': 'xhrPolling'},
 					success: function(data){
@@ -145,6 +146,8 @@
 			return {'heart': false, 'transport': function(){ return fake; }};
 		}
 	};
+
+	var pollType = url.split('/')[2] == location.host ? 'text' : 'jsonp';
 
 	var tn = 0;
 	function next(){
