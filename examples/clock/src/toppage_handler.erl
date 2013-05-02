@@ -13,21 +13,19 @@ init(_Transport, Req, []) ->
 handle(Req, State) ->
 	Body = <<"
 <!DOCTYPE html>
-<html lang=\"en\">
+<html lang='en'>
 <head>
-	<meta charset=\"utf-8\">
+	<meta charset='utf-8'>
 	<title>Bullet Clock</title>
 </head>
 
 <body>
-	<p>Connection status: <span id=\"status\">bullet not started</span></p>
-	<p>Current time: <span id=\"time\">unknown</span></p>
+	<p>Connection status: <span id='status'>bullet not started</span></p>
+	<p>Current time: <span id='time'>unknown</span></p>
 
-	<script
-		src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js\">
-	</script>
-	<script src=\"/static/bullet.js\"></script>
-	<script type=\"text/javascript\">
+	<script src='http://code.jquery.com/jquery-1.9.1.min.js'></script>
+	<script src='/static/bullet.js'></script>
+	<script type='text/javascript'>
 // <![CDATA[
 $(document).ready(function(){
 	var bullet = $.bullet('ws://localhost:8080/bullet');

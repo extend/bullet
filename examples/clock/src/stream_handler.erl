@@ -24,9 +24,18 @@ stream(Data, Req, State) ->
 
 info(refresh, Req, State) ->
 	_ = erlang:send_after(?PERIOD, self(), refresh),
-	DateTime = cowboy_clock:rfc1123(),
-	io:format("clock refresh timeout: ~s~n", [DateTime]),
-	{reply, DateTime, Req, State};
+	Body = cowboy_clock:rfc1123(),
+	%% handling jsonp
+	{Vals, _} = cowboy_req:qs_vals(Req),
+	case lists:keyfind(<<"callback">>, 1, Vals) of
+		{_, Value} ->
+			%% wraps it in callback and also in an array since content-type of the arg has to be json
+			Body2 = [Value, <<"([\"">>, Body, <<"\"]);">>]; 
+		_ -> 
+			Body2 = Body
+	end,
+	io:format("clock refresh timeout:~p~n", [Body2]),
+	{reply, Body2, Req, State};
 info(Info, Req, State) ->
 	io:format("info received ~p~n", [Info]),
 	{ok, Req, State}.
