@@ -21,7 +21,12 @@
 	disconnect. You only need to handle sending messages, receiving them,
 	and managing the heartbeat of the stream.
 
-	Usage: $.bullet(url);
+	Usage: $.bullet(url, opts);
+
+	- url: bullet's handler url
+	- opts: an array of selected transports
+		example: ['xhrPolling'] 
+		default: all available transports
 
 	Then you can register one of the 4 event handlers:
 	onopen, onmessage, onclose, onheartbeat.
@@ -32,7 +37,7 @@
 	onheartbeat is called once every few seconds to allow you to easily setup
 	a ping/pong mechanism.
 */
-(function($){$.extend({bullet: function(url){
+(function($){$.extend({bullet: function(url, opts){
 	var CONNECTING = 0;
 	var OPEN = 1;
 	var CLOSING = 2;
@@ -149,22 +154,19 @@
 	var tn = 0;
 	function next(){
 		var c = 0;
-
 		for (var f in transports){
-			if (tn == c){
+			if (opts && opts.indexOf(f)==-1) tn++;
+			else if (tn == c){
 				var t = transports[f]();
 				if (t){
 					var ret = new t.transport(url);
 					ret.heart = t.heart;
 					return ret;
 				}
-
 				tn++;
 			}
-
 			c++;
 		}
-
 		return false;
 	}
 
