@@ -21,7 +21,12 @@
 	disconnect. You only need to handle sending messages, receiving them,
 	and managing the heartbeat of the stream.
 
-	Usage: $.bullet(url);
+	Usage: $.bullet(url, transports);
+
+	 - url: bullet's handler url
+	 - transports: an array of selected transports
+	 	example: ['xhrPolling'] 
+		default: all available transports
 
 	Then you can register one of the 4 event handlers:
 	onopen, onmessage, onclose, onheartbeat.
@@ -32,13 +37,13 @@
 	onheartbeat is called once every few seconds to allow you to easily setup
 	a ping/pong mechanism.
 */
-(function($){$.extend({bullet: function(url){
+(function($){$.extend({bullet: function(url, transports){
 	var CONNECTING = 0;
 	var OPEN = 1;
 	var CLOSING = 2;
 	var CLOSED = 3;
 
-	var transports = {
+	var availTransports = {
 		/**
 			The websocket transport is disabled for Firefox 6.0 because it
 			causes a crash to happen when the connection is closed.
@@ -148,8 +153,10 @@
 
 	//transports keys
 	var keys = [];
-	for (var key in transports){
-		keys.push(key);
+	for (var key in availTransports){
+		if (!transports || transports.indexOf(key)!=-1){
+			keys.push(key);
+		}
 	}
 
 	//current transport index
@@ -159,7 +166,7 @@
 		if (tn == keys.length){
 			return false;
 		}
-		var t = transports[keys[tn]]();
+		var t = availTransports[keys[tn]]();
 		if (t){
 			var ret = new t.transport(url);
 			ret.heart = t.heart;
