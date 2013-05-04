@@ -146,25 +146,25 @@
 		}
 	};
 
+	//transports keys
+	var keys = [];
+	for (var key in transports){
+		keys.push(key);
+	}
+
+	//current transport index
 	var tn = 0;
+	
 	function next(){
-		var c = 0;
-
-		for (var f in transports){
-			if (tn == c){
-				var t = transports[f]();
-				if (t){
-					var ret = new t.transport(url);
-					ret.heart = t.heart;
-					return ret;
-				}
-
-				tn++;
-			}
-
-			c++;
+		if (tn == keys.length){
+			return false;
 		}
-
+		var t = transports[keys[tn]]();
+		if (t){
+			var ret = new t.transport(url);
+			ret.heart = t.heart;
+			return ret;
+		}
 		return false;
 	}
 
