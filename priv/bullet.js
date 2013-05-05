@@ -256,6 +256,9 @@
 		this.setURL = function(newURL){
 			url = newURL;
 		};
+		this.getURL = function(){
+			return url;
+		};
 		this.send = function(data){
 			if (transport){
 				return transport.send(data);
