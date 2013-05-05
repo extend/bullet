@@ -24,9 +24,18 @@ stream(Data, Req, State) ->
 
 info(refresh, Req, State) ->
 	_ = erlang:send_after(?PERIOD, self(), refresh),
-	DateTime = cowboy_clock:rfc1123(),
-	io:format("clock refresh timeout: ~s~n", [DateTime]),
-	{reply, DateTime, Req, State};
+
+	%% letting the possibility to handle JSONP messages
+	Data = cowboy_clock:rfc1123(),
+	io:format("clock refresh timeout: ~s~n", [Data]),
+	case cowboy_req:qs_val(<<"callback">>, Req) of
+		{undefined, _} ->
+			{reply, Data, Req, State};
+		{Callback, _} ->
+			{reply, [Callback, <<"(\"">>, Data, <<"\");">>],
+				cowboy_req:set_resp_header(
+					<<"content-type">>,<<"application/javascript">>,Req), State}
+	end;
 info(Info, Req, State) ->
 	io:format("info received ~p~n", [Info]),
 	{ok, Req, State}.

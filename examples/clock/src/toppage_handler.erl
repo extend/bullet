@@ -24,7 +24,7 @@ handle(Req, State) ->
 	<p>Current time: <span id=\"time\">unknown</span></p>
 
 	<script
-		src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js\">
+		src=\"http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js\">
 	</script>
 	<script src=\"/static/bullet.js\"></script>
 	<script type=\"text/javascript\">
