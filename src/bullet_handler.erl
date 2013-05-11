@@ -122,17 +122,22 @@ websocket_init(Transport, Req, Opts) ->
 			{shutdown, Req2}
 	end.
 
-websocket_handle({text, Data}, Req,
+websocket_handle({text,Data}, Req,
 		State=#state{handler=Handler, handler_state=HandlerState}) ->
+        handle_data(Handler, Data, Req, HandlerState);
+
+websocket_handle(Data, Req,
+		State=#state{handler=Handler, handler_state=HandlerState}) ->
+        handle_data(Handler, Data, Req, HandlerState);
+
+handle_data(Handler, Data, Req, HandlerState) ->
 	case Handler:stream(Data, Req, HandlerState) of
 		{ok, Req2, HandlerState2} ->
 			{ok, Req2, State#state{handler_state=HandlerState2}, hibernate};
 		{reply, Reply, Req2, HandlerState2} ->
 			{reply, {text, Reply}, Req2,
 				State#state{handler_state=HandlerState2}, hibernate}
-	end;
-websocket_handle(_Frame, Req, State) ->
-	{ok, Req, State, hibernate}.
+	end.
 
 websocket_info(Info, Req, State=#state{
 		handler=Handler, handler_state=HandlerState}) ->
