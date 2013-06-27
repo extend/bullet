@@ -61,7 +61,7 @@
 			}
 
 			if (transport){
-				return {'heart': true, 'transport': transport};
+				return transport;
 			}
 
 			return null;
@@ -107,7 +107,7 @@
 				}
 			};
 
-			return {'heart': false, 'transport': function(){ return fake; }};
+			return function(){ return fake; };
 		},
 
 		xhrPolling: function(){
@@ -119,6 +119,7 @@
 			var xhr;
 
 			var fake = {
+				poll: true,
 				readyState: CONNECTING,
 				send: function(data){
 					if (this.readyState != CONNECTING && this.readyState != OPEN){
@@ -193,7 +194,7 @@
 
 			nextPoll();
 
-			return {'heart': false, 'transport': function(){ return fake; }};
+			return function(){ return fake; };
 		}
 	};
 
@@ -201,13 +202,11 @@
 	function next(){
 		var c = 0;
 
-		for (var f in transports){
+		for (var key in transports){
 			if (tn == c){
-				var t = transports[f]();
+				var t = transports[key]();
 				if (t){
-					var ret = new t.transport(url);
-					ret.heart = t.heart;
-					return ret;
+					return t;
 				}
 
 				tn++;
@@ -216,7 +215,7 @@
 			c++;
 		}
 
-		return false;
+		return function(){ return false; };
 	}
 
 	var stream = new function(){
@@ -231,7 +230,8 @@
 		function init(){
 			isClosed = false;
 			readyState = CONNECTING;
-			transport = next();
+			var transport_fun = next();
+			transport = new transport_fun(url);
 
 			if (!transport){
 				// Hard disconnect, inform the user and retry later
@@ -246,7 +246,7 @@
 				// We got a connection, reset the poll delay
 				delay = delayDefault;
 
-				if (transport.heart){
+				if (!transport.poll){
 					heartbeat = setInterval(function(){stream.onheartbeat();}, 20000);
 				}
 
