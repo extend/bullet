@@ -194,6 +194,70 @@
 			nextPoll();
 
 			return {'heart': false, 'transport': function(){ return fake; }};
+		},
+			
+		jsonp: function(){
+			if (options !== undefined && options.disableJSONP) {
+				return false;
+			}
+			
+			var timeout;
+			var xhr;
+
+			var fake = {
+				readyState: CONNECTING,
+				send: function(data){
+					// jsonp can't do POST, and transporting data in GET is not
+					// reliable through proxies
+					//poll(url.replace('ws', 'http')+'/'+data);
+				},
+				close: function(){
+					this.readyState = CLOSED;
+					xhr.abort();
+					clearTimeout(timeout);
+					fake.onclose();
+				},
+				onopen: function(){},
+				onmessageJson: function(){},
+				onerror: function(){},
+				onclose: function(){}
+			};
+
+			function poll(fakeurl){
+
+				xhr = $.ajax({
+					type: 'GET',
+					cache: false,
+					url: fakeurl,
+					crossDomain: true, // use it for testing from same domain
+					dataType: 'jsonp',
+					data: {},
+					headers: {'X-Socket-Transport': 'xhrPolling'},
+					success: function(data){
+						if (fake.readyState == CONNECTING){
+							fake.readyState = OPEN;
+							fake.onopen(fake);
+						}
+						// Connection might have closed without a response body
+						if (data.length != 0){
+							fake.onmessageJson({'data': data});
+						}
+						if (fake.readyState == OPEN){
+							nextPoll();
+						}
+					},
+					error: function(xhr){
+						fake.onerror();
+					}
+				});
+			}
+
+			function nextPoll(){
+				timeout = setTimeout(function(){poll(url.replace('ws', 'http'));}, 100);
+			}
+
+			nextPoll();
+			return {'heart': false, 'transport': function(){ return fake; }};
 		}
 	};
 
@@ -290,6 +354,9 @@
 			transport.onerror = transport.onclose;
 			transport.onmessage = function(e){
 				stream.onmessage(e);
+			};
+			transport.onmessageJson = function(e){
+				stream.onmessageJson(e);
 			};
 		}
 		init();
