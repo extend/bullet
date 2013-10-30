@@ -117,6 +117,25 @@ $(document).ready(function(){
 Always use the WebSocket (ws:) form for your bullet URLs and Bullet
 will change the URL as needed for non-WebSocket transports.
 
+The URL can also be dynamic
+
+``` js	
+var ctr=0;
+$(document).ready(function(){
+	//passing url as a function that returns a url 
+	//to connnect/reconnect to
+	var bullet = $.bullet(function(){ 
+		var url = 'ws://localhost/path/to/bullet/handler'
+			+'?time='+Date.now()
+			+ '&ctr='+ctr;
+		return url;
+	});
+	bullet.onmessage = function(e){
+		ctr++;
+	};
+});
+```
+
 The `$.bullet` function takes an optional second 'options' object.
 The following properties are supported:
 
