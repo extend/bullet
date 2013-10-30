@@ -47,7 +47,8 @@
 			return false;
 		}
 
-		var sendUrl = url.replace('ws:', 'http:').replace('wss:', 'https:');
+		var sendUrl = (typeof url == "function") ? url() : url;
+		sendUrl = sendUrl.replace('ws:', 'http:').replace('wss:', 'https:');
 		var self = this;
 		$.ajax({
 			async: false,
@@ -213,7 +214,8 @@
 			if (tn == c){
 				var t = transports[f]();
 				if (t){
-					var ret = new t.transport(url);
+					var sendUrl = (typeof url == "function") ? url() : url;
+					var ret = new t.transport(sendUrl);
 					ret.heart = t.heart;
 					return ret;
 				}
