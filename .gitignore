@@ -2,3 +2,4 @@
 .eunit
 deps
 ebin
+erlang.mk
