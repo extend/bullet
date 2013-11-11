@@ -39,6 +39,15 @@
 	var CLOSED = 3;
 	var httpURL = url.replace('ws:', 'http:').replace('wss:', 'https:');
 
+	if (url == httpURL) {
+		if (options == undefined) {
+			var options = {'disableWebSocket': true};
+		}
+		else {
+			options.disableWebSocket = true;
+		}
+	}
+
 	var xhrSend = function(data){
 		/**
 			Send a message using ajax. Used for both the
