@@ -13,13 +13,11 @@
 %% OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 {application, bullet, [
-	{description,
-		"Simple, reliable, efficient streaming for Cowboy."},
-	{vsn, "0.4.1"},
-	{modules, []},
-	{applications, [
-		kernel,
-		stdlib,
-		cowboy
-	]}
+  {description, "Simple, reliable, efficient streaming for Cowboy."},
+  {vsn, "0.4.1"},
+  {modules, []},
+  {registered, []},
+  {applications, [
+    kernel, stdlib, cowboy
+  ]}
 ]}.
