@@ -36,6 +36,10 @@ handle(Req, State) ->
 		Current time (polling only): <span id=\"time_polling\">unknown</span>
 		<span></span><span id=\"status_polling\">unknown</span>
 		<button id=\"send_polling\">Send Time</button></p>
+	<p><input type=\"checkbox\" checked=\"yes\" id=\"enable_jsonp_polling\"></input>
+		Current time (polling only): <span id=\"time_jsonp_polling\">unknown</span>
+		<span></span><span id=\"status_jsonp_polling\">unknown</span>
+		<button id=\"send_polling\">Send Time</button></p>	
 
 	<script
 		src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js\">
@@ -61,7 +65,7 @@ $(document).ready(function(){
 			};
 			bullet.onheartbeat = function(){
 				console.log('ping: ' + name);
-				bullet.send('ping: ' + name);
+				if (bullet!=null) bullet.send('ping: ' + name);
 			};
 		}
 		open();
@@ -83,11 +87,17 @@ $(document).ready(function(){
 
 	start('best', {});
 	start('websocket', {'disableEventSource': true,
-		'disableXHRPolling': true});
+		'disableXHRPolling': true,
+		'disableJSONP': true});
 	start('eventsource', {'disableWebSocket': true,
-		'disableXHRPolling': true});
+		'disableXHRPolling': true,
+		'disableJSONP': true});
 	start('polling', {'disableWebSocket': true,
-		'disableEventSource': true});
+		'disableEventSource': true,
+		'disableJSONP': true});
+	start('jsonp_polling', {'disableWebSocket': true,
+		'disableEventSource': true,
+		'disableXHRPolling': true});
 });
 // ]]>
 	</script>
