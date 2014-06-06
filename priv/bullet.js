@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2011-2012, Loïc Hoguin <essen@ninenines.eu>
+	Copyright (c) 2011-2012, Loï¿½c Hoguin <essen@ninenines.eu>
 
 	Permission to use, copy, modify, and/or distribute this software for any
 	purpose with or without fee is hereby granted, provided that the above
@@ -321,7 +321,13 @@
 		};
 		this.send = function(data){
 			if (transport){
-				return transport.send(data);
+				var ret = transport.send(data);
+				if (ret === undefined){
+					return true;
+				}
+				else {
+					return ret;
+				}
 			} else{
 				return false;
 			}
