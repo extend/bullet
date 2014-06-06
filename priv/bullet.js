@@ -322,12 +322,7 @@
 		this.send = function(data){
 			if (transport){
 				var ret = transport.send(data);
-				if (ret === undefined){
-					return true;
-				}
-				else {
-					return ret;
-				}
+				return (ret === undefined) || ret;
 			} else{
 				return false;
 			}
