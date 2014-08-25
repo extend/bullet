@@ -32,21 +32,28 @@
 	onheartbeat is called once every few seconds to allow you to easily setup
 	a ping/pong mechanism.
 */
-(function($){$.extend({bullet: function(url, options){
+(function($,undefined){
+
+if (window.jQuery !== undefined) {
+	$.extend({bullet:bullet});
+} else {
+	window.$ = window.$ || {};
+	window.$.bullet = bullet;
+}
+
+function bullet (url, options){
 	var CONNECTING = 0;
 	var OPEN = 1;
 	var CLOSING = 2;
 	var CLOSED = 3;
 	var httpURL = url.replace('ws:', 'http:').replace('wss:', 'https:');
+	var options = options || {};
 
 	if (url == httpURL) {
-		if (options == undefined) {
-			var options = {'disableWebSocket': true};
-		}
-		else {
-			options.disableWebSocket = true;
-		}
+		options.disableWebSocket = true;
 	}
+
+	var ajax = typeof options.xhr === 'function' && options.xhr || $.ajax;
 
 	var xhrSend = function(data){
 		/**
@@ -58,21 +65,18 @@
 		}
 
 		var self = this;
-		$.ajax({
+		ajax(ajaxDefaults({
 			async: false,
-			cache: false,
 			type: 'POST',
 			url: httpURL,
 			data: data,
-			dataType: 'text',
 			contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-			headers: {'X-Socket-Transport': 'xhrPolling'},
 			success: function(data){
 				if (data && data.length !== 0){
 					self.onmessage({'data': data});
 				}
 			}
-		});
+		}));
 
 		return true;
 	};
@@ -173,22 +177,17 @@
 			};
 
 			function poll(){
-
-				xhr = $.ajax({
+				xhr = ajax(ajaxDefaults({
 					type: 'GET',
-					cache: false,
 					url: httpURL,
-					dataType: 'text',
-					data: {},
-					headers: {'X-Socket-Transport': 'xhrPolling'},
-					success: function(data){
+					success: function(data) {
 						xhr = null;
 						if (fake.readyState == CONNECTING){
 							fake.readyState = OPEN;
 							fake.onopen(fake);
 						}
 						// Connection might have closed without a response body
-						if (data && data.length !== 0){
+						if (data && data.length !== 0) {
 							fake.onmessage({'data': data});
 						}
 						if (fake.readyState == OPEN){
@@ -199,7 +198,7 @@
 						xhr = null;
 						fake.onerror();
 					}
-				});
+				}));
 			}
 
 			function nextPoll(){
@@ -335,4 +334,29 @@
 	};
 
 	return stream;
-}})})(jQuery);
+}
+
+function noop() {}
+
+function ajaxDefaults(o) {
+	var base = {
+		type: 'GET',
+		cache: false,
+		dataType: 'text',
+		data: "",
+		headers: {'X-Socket-Transport': 'xhrPolling'},
+		async: true,
+		success: noop,
+		error: noop
+	};
+
+	for (var k in o) if (o.hasOwnProperty(k)) {
+		base[k] = o[k];
+	}
+
+	base.method = o.type;
+
+	return base;
+}
+
+})(jQuery);
