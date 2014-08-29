@@ -359,4 +359,4 @@ function ajaxDefaults(o) {
 	return base;
 }
 
-})(jQuery);
+})(window.jQuery);
