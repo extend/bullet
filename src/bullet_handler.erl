@@ -39,7 +39,8 @@ init(Transport, Req, Opts) ->
 	case cowboy_req:header(<<"upgrade">>, Req) of
 		{undefined, Req2} ->
 			{Method, Req3} = cowboy_req:method(Req2),
-			init(Transport, Req3, Opts, Method);
+			Req4 = cors(Req3),
+			init(Transport, Req4, Opts, Method);
 		{Bin, Req2} when is_binary(Bin) ->
 			case cowboy_bstr:to_lower(Bin) of
 				<<"websocket">> ->
@@ -77,14 +78,30 @@ init(Transport, Req, Opts, <<"POST">>) ->
 		{shutdown, Req2, HandlerState} ->
 			{shutdown, Req2, State#state{handler_state=HandlerState}}
 	end;
+init(_Transport, Req, Opts, <<"OPTIONS">>) ->
+	{handler, Handler} = lists:keyfind(handler, 1, Opts),
+	State = #state{handler=Handler},
+	{ok, Req2} = cowboy_req:reply(200, Req),
+	{ok, Req2, State#state{handler_state={0,[],[]}}};
+
 init(_Transport, Req, _Opts, _Method) ->
 	{ok, Req2} = cowboy_req:reply(405, [], [], Req),
 	{shutdown, Req2, undefined}.
 
+cors(Req) ->
+	Req2 = cowboy_req:set_resp_header(<<"access-control-allow-origin">>, <<"*">>, Req),
+	% Access-Control-Allow-Methods: POST, GET, PUT, PATCH, DELETE, OPTIONS
+	Req3 = cowboy_req:set_resp_header(<<"access-control-allow-credentials">>, <<"true">>, Req2),
+	cowboy_req:set_resp_header(<<"access-control-allow-headers">>,
+		<<"content-type, if-modified-since, authorization, x-requested-with, x-socket-transport">>, Req3).
+
 handle(Req, State) ->
 	{Method, Req2} = cowboy_req:method(Req),
 	handle(Req2, State, Method).
-
+	
+handle(Req, State=#state{handler=Handler, handler_state=HandlerState},
+		<<"OPTIONS">>) ->
+	{ok, Req, State};
 handle(Req, State=#state{handler=Handler, handler_state=HandlerState},
 		<<"POST">>) ->
 	case cowboy_req:body(Req) of
