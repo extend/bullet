@@ -1,5 +1,5 @@
 /*
-	Copyright (c) 2011-2012, Loïc Hoguin <essen@ninenines.eu>
+	Copyright (c) 2011-2012, LoÃ¯c Hoguin <essen@ninenines.eu>
 
 	Permission to use, copy, modify, and/or distribute this software for any
 	purpose with or without fee is hereby granted, provided that the above
@@ -37,7 +37,7 @@
 	var OPEN = 1;
 	var CLOSING = 2;
 	var CLOSED = 3;
-	var httpURL = url.replace('ws:', 'http:').replace('wss:', 'https:');
+	var httpURL = url.replace(/^ws/, "http");
 
 	if (url == httpURL) {
 		if (options == undefined) {
