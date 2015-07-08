@@ -278,6 +278,8 @@
 					return;
 				}
 
+				stream.onerror();
+
 				transport = null;
 				clearInterval(heartbeat);
 
@@ -314,6 +316,7 @@
 		this.onmessage = function(){};
 		this.ondisconnect = function(){};
 		this.onclose = function(){};
+		this.onerror = function(){};
 		this.onheartbeat = function(){};
 
 		this.setURL = function(newURL){
