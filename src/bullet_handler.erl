@@ -1,3 +1,4 @@
+%% coding: latin-1
 %% Copyright (c) 2011-2012, Loïc Hoguin <essen@ninenines.eu>
 %%
 %% Permission to use, copy, modify, and/or distribute this software for any
